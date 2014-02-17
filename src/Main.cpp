@@ -1,7 +1,7 @@
 #define GLEW_STATIC // Easier debugging
 #include <GL/glew.h>
 #include <GL/gl.h>
-#include <SDL/SDL.h>
+#include <SDL.h>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -21,6 +21,8 @@ string filename = "data/ogre.md2";
 vector<shared_ptr<GameAsset> > assets;
 
 bool horrible_global_go = false;
+
+SDL_Window * window = nullptr;
 
 /*
  * SDL timers run in separate threads.  In the timer thread
@@ -61,7 +63,8 @@ void display() {
   }
   
   // Don't forget to swap the buffers
-  SDL_GL_SwapBuffers();
+  //SDL_GL_SwapBuffers();
+	SDL_GL_SwapWindow(window);
 }
 
 int main(int argc, char ** argv) {
@@ -82,10 +85,17 @@ int main(int argc, char ** argv) {
 	atexit(SDL_Quit);
 
 	// Create a new window with an OpenGL surface
-	if (!(surf = SDL_SetVideoMode(width, height, colour_depth, SDL_OPENGL))) {
+	/*if (!(surf = SDL_SetVideoMode(width, height, colour_depth, SDL_OPENGL))) {
 			cout << "Failed to initialise video mode: " << SDL_GetError() << endl;
 			SDL_Quit();
+	}*/
+	window = SDL_CreateWindow("CI224", 0, 0, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+	if (window == nullptr) {
+		cout << "Failed to create a window: " << SDL_GetError() << endl;
+		SDL_Quit();
 	}
+
+	SDL_GL_CreateContext(window);
 
 	// Initialise GLEW - an easy way to ensure OpenGl 2.0+
 	// The *must* be done after we have set the video mode - otherwise we have no OpenGL context.
